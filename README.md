@@ -3,6 +3,9 @@
 
 This is a repository for Build and Deploy UCATI: Next.js 14, React, Uploadthing, RapidApi,Tailwind
 
+Under the Supervisor :- 
+Dr. Rajneesh Kumar Patel
+
 
 Key Features:
 
