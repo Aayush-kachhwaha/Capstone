@@ -1,0 +1,135 @@
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import qs from "query-string";
+
+import { UploadDropzone } from "@/lib/uploadthing";
+
+interface FileUploadProps {
+  setModal: (modal: boolean) => void;
+}
+
+const FileUpload = ({ setModal }: FileUploadProps) => {
+  const [url, setUrl] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!url) return;
+
+    const searchUrl = qs.stringifyUrl(
+      {
+        url: "/lens",
+        query: { q: url },
+      },
+      { skipEmptyString: true }
+    );
+
+    router.push(searchUrl);
+  };
+
+  return (
+    <div className="file-upload-container">
+      <div className="flex justify-between p-4">
+        <p className="lg:ml-[30%] ml-[20%]">Search any image with Lens</p>
+        <div className="close-button" onClick={() => setModal(false)}>
+          Close
+        </div>
+      </div>
+      <form onSubmit={handleSearch} className="upload-form">
+        <UploadDropzone
+          endpoint={"messageFile"}
+          onClientUploadComplete={(res) => {
+            if (res?.[0]?.url) {
+              router.push(`/lens?q=${res[0].url}`);
+            }
+          }}
+          onUploadError={(error: Error) => {
+            console.log(error);
+          }}
+        />
+        <div className="or-divider">
+          <p className="text-center font-semibold text-white">OR</p>
+        </div>
+        <div className="flex justify-between">
+          <div className="input-container">
+            <input
+              type="search"
+              id="url-search"
+              className="input-field"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Paste image link"
+            />
+          </div>
+          <button type="submit" className="search-button">
+            Search
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default FileUpload;
+
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { BiSolidMicrophone } from "react-icons/bi";
+import { BsCameraFill } from "react-icons/bs";
+import { CiSearch } from "react-icons/ci";
+import qs from "query-string";
+
+import FileUpload from "@/components/lens/FileUpload";
+
+const SearchForm = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const router = useRouter();
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchQuery) return;
+
+    const url = qs.stringifyUrl(
+      {
+        url: "/all",
+        query: { q: searchQuery },
+      },
+      { skipEmptyString: true }
+    );
+    router.push(url);
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="search-form">
+      <h1 className="text-8xl">Image Search</h1>
+      <div className="search-input-container">
+        <CiSearch className="search-icon" />
+        <input
+          type="search"
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <BiSolidMicrophone className="search-icon" />
+        <BsCameraFill
+          className="search-icon cursor-pointer"
+          onClick={() => setShowUploadModal(true)}
+        />
+      </div>
+      {showUploadModal && (
+        <div className="modal-container">
+          <FileUpload setModal={setShowUploadModal} />
+        </div>
+      )}
+      <div className="search-button-container">
+        <button type="submit" className="search-button">
+          Search
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default SearchForm;
