@@ -75,3 +75,5 @@ Running commands with npm `npm run [command]`
 | command | description                              |
 | :------ | :--------------------------------------- |
 | `dev`   | Starts a development instance of the app |
+
+~Kindely update latest packets of the required Software which are in unsed of the development of the website~
